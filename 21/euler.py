@@ -35,7 +35,20 @@ def old_main():
     print('count:', count)
 
 def main():
-    pass
+    mysum = 0
+
+    # {number:d_value}
+    candidates = {}
+    for i in range(1, limit):
+        d = d_value(i)
+
+        if d in candidates and candidates[d] == i:
+            mysum += i
+            mysum += d
+        else:
+            candidates[i] = d
+
+    print(mysum)
 
 def d_value(n):
     return sum(get_divisors(n)) - n
