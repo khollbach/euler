@@ -1,0 +1,7 @@
+FYI: 23's euler.py is a bit of a mess.
+
+The next thing you should do is put all useful functions from previous puzzles
+into another file that you can import from. Maybe call it utils.py and have it
+sit alongside each euler.py.
+
+Then tackle 23 with your sweet new library.
