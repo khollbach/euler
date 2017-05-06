@@ -1,0 +1,114 @@
+#!/usr/bin/python3
+
+'''
+Helper functions for Project Euler problems.
+Mostly to do with prime numbers and the like.
+'''
+
+def is_prime(n):
+    '''(int) -> bool
+    Is n prime?
+    '''
+    if n < 2:
+        return False
+
+    # This would be math.floor, but with floating point numbers,
+    # you can never be too safe.
+    upper_bound = math.ceil(math.sqrt(n))
+
+    for i in range(2, upper_bound + 1):
+        if n % i == 0:
+            return False
+    return True
+
+def get_prime_factors(n):
+    '''(int) -> {int:int}
+    Return the prime factors of n with multiplicities.
+    Requires n > 0.
+    '''
+    if n < 1:
+        return None
+
+    factors = {}
+
+    i = 2
+    while i <= n:
+        if n % i == 0:
+            # Insert the prime / increment its multiplicity.
+            if i in factors:
+                factors[i] += 1
+            else:
+                factors[i] = 1
+
+            # Divide it out.
+            n //= i
+        else:
+            i += 1
+
+    return factors
+
+def get_num_divisors(n):
+    '''(int) -> int
+    Return the number of divisors of n.
+    Requires n > 0.
+    '''
+    if n < 1:
+        return None
+
+    factors = get_prime_factors(n)
+
+    how_many = 1
+    for prime in factors:
+        how_many *= factors[prime] + 1
+
+    return how_many
+
+def get_divisors(n):
+    '''(int) -> {int}
+    Return the divisors of n.
+    Requires n > 0.
+    '''
+    if n < 1:
+        return None
+
+    # [(int, int)]; first is prime factor, second is multiplicity.
+    factor_list = []
+    factors = get_prime_factors(n)
+    for prime in factors:
+        factor_list.append((prime, factors[prime]))
+
+    # Inclusive ranges [[0..mult_1], ..., [0..mult_k]],
+    # represented as a list of non-inclusive upper bounds.
+    ranges = [mult + 1 for fact, mult in factor_list]
+
+    # Helper function.
+    def combinations(ranges):
+        '''[int] -> generator([int])
+        The input list, ranges=[n1,...,nk], is treated as a list of
+        non-inclusive upper-bounds.
+        We generate all possible lists [m1,...,mk] such that
+        0 <= m1 < n1, ..., 0 <= mk < nk.
+        We generate them in a sensible order:
+        the numbers further to the right in the list vary most rapidly.
+        '''
+        # Base case
+        if len(ranges) == 0:
+            yield []
+            return
+
+        for i in range(ranges[0]):
+            for combo in combinations(ranges[1:]):
+                yield [i] + combo
+
+    # Compute divisors of n.
+    # Each distinct combination of multiplicities (ie exponents) of its prime
+    # factors defines a distinct divisor.
+    divisors = set()
+    for combo in combinations(ranges):
+        # Take the product of the prime factors to their exponents.
+        divisor = 1
+        for i in range(len(factor_list)):
+            divisor *= factor_list[i][0] ** combo[i]
+        divisors.add(divisor)
+
+    return divisors
