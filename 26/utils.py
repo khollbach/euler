@@ -5,6 +5,8 @@ Helper functions for Project Euler problems.
 Mostly to do with prime numbers and the like.
 '''
 
+import math
+
 fib_cache = {}
 def fib(n):
     '''(int) -> int
@@ -30,13 +32,13 @@ def is_prime(n):
     if n < 2:
         return False
 
-    # This would be math.floor, but with floating point numbers,
-    # you can never be too safe.
-    upper_bound = math.ceil(math.sqrt(n))
+    m = math.sqrt(n)
 
-    for i in range(2, upper_bound + 1):
+    i = 2
+    while i <= m + 0.1:
         if n % i == 0:
             return False
+        i += 1
     return True
 
 def get_prime_factors(n):
