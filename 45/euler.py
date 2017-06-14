@@ -5,10 +5,13 @@ from utils import *
 import math
 
 def main():
-    test()
+    n = 1
+    while True:
+        hn = h(n)
+        if is_tri(hn) and is_pent(hn):
+            print(n, hn)
 
-def test():
-    pass
+        n += 1
 
 def t(n):
     '''(int) -> int
@@ -89,6 +92,7 @@ def is_pent(x):
     >>> is_pent(0)
     >>> is_pent(2)
     >>> is_pent(3)
+    >>> is_pent(6)
     >>> is_pent(15)
     >>> is_pent(100)
     >>> is_pent(1)
@@ -112,41 +116,126 @@ def is_pent(x):
     >>> is_pent(145)
     10
     '''
-    # TODO: rewrite using the int_solve_quadratic function you just wrote,
-    #       and test said function.
-    #       Then write similar is_tri and is_hex functions and solve the
-    #       problem by iterating over the hexagonal numbers
-    #       (they grow fastest).
-    return None
-
     if x < 1:
         return None
 
-    sqrt = int_sqrt(1 + 24 * x)
-    if not sqrt:
+    solns = int_solve_quadratic(3, -1, -2 * x)
+
+    # Take only positive solutions.
+    def posve(x):
+        return x > 0
+    solns = list(filter(posve, solns))
+
+    assert len(solns) < 2
+
+    if len(solns) == 0:
+        return None
+    else:
+        return solns[0]
+
+def is_tri(x):
+    '''(int) -> int
+    Is x a triangle number?
+    If yes, return the n for which x equals T[n].
+    Otherwise return None.
+
+    O(1)
+
+    >>> is_tri(-1)
+    >>> is_tri(0)
+    >>> is_tri(2)
+    >>> is_tri(50)
+    >>> is_tri(100)
+    >>> is_tri(1)
+    1
+    >>> is_tri(3)
+    2
+    >>> is_tri(6)
+    3
+    >>> is_tri(10)
+    4
+    >>> is_tri(15)
+    5
+    '''
+    if x < 1:
         return None
 
-    if (sqrt + 1) % 6 == 0:
-        return (sqrt + 1) // 6
-    else:
+    solns = int_solve_quadratic(1, 1, -2 * x)
+
+    # Take only positive solutions.
+    def posve(x):
+        return x > 0
+    solns = list(filter(posve, solns))
+
+    assert len(solns) < 2
+
+    if len(solns) == 0:
         return None
+    else:
+        return solns[0]
+
+def is_hex(x):
+    '''(int) -> int
+    Is x a triangle number?
+    If yes, return the n for which x equals T[n].
+    Otherwise return None.
+
+    O(1)
+
+    >>> is_hex(-1)
+    >>> is_hex(0)
+    >>> is_hex(2)
+    >>> is_hex(50)
+    >>> is_hex(100)
+    >>> is_hex(1)
+    1
+    >>> is_hex(6)
+    2
+    >>> is_hex(15)
+    3
+    >>> is_hex(28)
+    4
+    >>> is_hex(45)
+    5
+    '''
+    if x < 1:
+        return None
+
+    solns = int_solve_quadratic(2, -1, -1 * x)
+
+    # Take only positive solutions.
+    def posve(x):
+        return x > 0
+    solns = list(filter(posve, solns))
+
+    assert len(solns) < 2
+
+    if len(solns) == 0:
+        return None
+    else:
+        return solns[0]
 
 def int_solve_quadratic(a, b, c):
     '''(int, int, int) -> [int]
     Solve a quadratic equation with integer coefficients.
+
     Return a list of the *integer* roots.
     The list will have length 0, 1, or 2.
 
     O(1)
     '''
-    sqrt = math.sqrt(b**2 - 4*a*c)
-    if not sqrt:
+    discrim = b**2 - 4*a*c
+    if discrim < 0:
+        return []
+
+    sqrt = int_sqrt(discrim)
+    if sqrt is None:
         return []
 
     solns = []
-    if (-b + sqrt) % (2*a):
+    if (-b + sqrt) % (2*a) == 0:
         solns.append((-b + sqrt) // (2*a))
-    if sqrt != 0 and (-b - sqrt) % (2*a):
+    if sqrt != 0 and (-b - sqrt) % (2*a) == 0:
         solns.append((-b - sqrt) // (2*a))
 
     return solns
